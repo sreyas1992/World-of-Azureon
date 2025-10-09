@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secrets of the Ember Castle - Level 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('Secrets of Ember Castle.png') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Crimson Text', serif;
+            color: #e8e3d3;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(139,69,19,0.7), rgba(205,92,92,0.6), rgba(178,34,34,0.5));
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
+            border: 3px solid #d4af37;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.8);
+        }
+
+        .game-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5em;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 69, 0, 0.6);
+            margin-bottom: 20px;
+            animation: flameGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes flameGlow {
+            0% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 69, 0, 0.6); }
+            100% { text-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 69, 0, 0.8); }
+        }
+
+        .level-indicator {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5em;
+            color: #ff6347;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 99, 71, 0.7);
+        }
+
+        .story-text {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #e8e3d3;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .objectives {
+            background: rgba(178, 34, 34, 0.3);
+            border: 2px solid #b22222;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .objectives h3 {
+            font-family: 'Cinzel', serif;
+            color: #ffd700;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .objectives ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives li {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1em;
+        }
+
+        .objectives li::before {
+            content: '🔥';
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .score-display {
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+
+        .score-display h4 {
+            font-family: 'Cinzel', serif;
+            color: #ffd700;
+            margin: 0 0 10px 0;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #b22222, #ff6347, #d4af37);
+            border: none;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            box-shadow: 0 0 30px rgba(178, 34, 34, 0.6);
+            transition: all 0.3s ease;
+            margin: 20px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(178, 34, 34, 0.8);
+            background: linear-gradient(135deg, #dc143c, #ff7f50, #ffd700);
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #4a4a4a, #666);
+            border: 2px solid #888;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1em;
+            cursor: pointer;
+            color: #e8e3d3;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #666, #888);
+            transform: translateY(-2px);
+        }
+
+        .flame-decoration {
+            font-size: 2em;
+            margin: 0 20px;
+            animation: flicker 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="flame-decoration">🔥</div>
+        <h1 class="game-title">Secrets of the Ember Castle</h1>
+        <div class="flame-decoration">🔥</div>
+        
+        <div class="level-indicator">⚔️ LEVEL 3 ⚔️</div>
+        
+        <div class="story-text">
+            The ancient Ember Castle rises before you, its towers wreathed in eternal flames. 
+            Within these cursed halls lies the legendary <strong>Spirit Spear of Azureon</strong>, 
+            the only weapon capable of defeating the mighty dragon that guards the <strong>Ember Relic</strong>.
+        </div>
+
+        <div class="objectives">
+            <h3>🏰 Your Quest Awaits</h3>
+            <ul>
+                <li><strong>Page 1:</strong> Navigate the treacherous castle platforms above fire pits</li>
+                <li><strong>Page 2:</strong> Find and retrieve the Spirit Spear hidden in the castle chambers</li>
+                <li><strong>Page 3:</strong> Battle spider monsters and the fire-breathing dragon</li>
+                <li><strong>Victory:</strong> Claim the Ember Relic and escape the castle</li>
+            </ul>
+        </div>
+
+        <div class="score-display" id="scoreDisplay">
+            <h4>🏆 Current Progress</h4>
+            <div id="heroScore">Hero Score: Loading...</div>
+            <div id="kingdomScore">Kingdom Glory: Loading...</div>
+            <div id="forestRelicStatus">🌟 Forest Relic Status: Loading...</div>
+        </div>
+
+        <button class="start-button" onclick="startLevel3()">
+            🔥 Enter the Ember Castle 🔥
+        </button>
+        
+        <br>
+        
+        <button class="back-button" onclick="goBack()">
+            ⬅️ Return to Previous Level
+        </button>
+    </div>
+
+    <script>
+        // Game data from previous levels
+        let gameData = {
+            playerScore: 0,
+            kingdomScore: 0,
+            lives: 3,
+            hasForestRelic: false,
+            character: 'warrior'
+        };
+
+        // Load saved scores from previous levels
+        function loadScores() {
+            // Get URL parameters from Level 2
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Load from URL parameters or localStorage as fallback
+            gameData.playerScore = parseInt(urlParams.get('playerScore')) || parseInt(localStorage.getItem('azureon_score') || '0');
+            gameData.kingdomScore = parseInt(urlParams.get('kingdomScore')) || parseInt(localStorage.getItem('kingdomScore') || '0');
+            gameData.lives = parseInt(urlParams.get('lives')) || 3;
+            gameData.hasForestRelic = urlParams.get('forestRelic') === 'true' || localStorage.getItem('azureon_forest_relic') === 'true';
+            gameData.character = urlParams.get('character') || 'warrior';
+            
+            // Update display
+            document.getElementById('heroScore').textContent = `Hero Score: ${gameData.playerScore.toLocaleString()}`;
+            document.getElementById('kingdomScore').textContent = `Kingdom Glory: ${gameData.kingdomScore.toLocaleString()}`;
+            
+            // Show forest relic status
+            const relicStatus = gameData.hasForestRelic ? '🌟 Forest Relic Obtained!' : '❌ Forest Relic Missing';
+            if (document.getElementById('forestRelicStatus')) {
+                document.getElementById('forestRelicStatus').textContent = relicStatus;
+            }
+            
+            console.log('Level 3 Data Loaded:', gameData);
+        }
+
+        function startLevel3() {
+            // Pass all game data to Level 3 game
+            const params = new URLSearchParams({
+                playerScore: gameData.playerScore,
+                kingdomScore: gameData.kingdomScore,
+                lives: gameData.lives,
+                forestRelic: gameData.hasForestRelic,
+                character: gameData.character
+            });
+            window.location.href = `level3_game.html?${params.toString()}`;
+        }
+
+        function goBack() {
+            // Return to Level 2
+            window.location.href = 'level2.html';
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', loadScores);
+    </script>
+</body>
+</html>
