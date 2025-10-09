@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2: Trial of the Ember Elder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #0a0f1c, #1a1a2e, #16213e, #0f1419);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease-in-out infinite;
+            color: #e8e3d3;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .game-info {
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #d4af37;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .info-panel {
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #d4af37;
+        }
+
+        .info-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .forest-relic-panel {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forest-relic-panel.has-relic {
+            background: rgba(50, 205, 50, 0.2);
+            border-color: #32CD32;
+            animation: relicGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes relicGlow {
+            0% { box-shadow: 0 0 10px rgba(50, 205, 50, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(50, 205, 50, 0.6); }
+        }
+
+        .forest-relic-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .relic-icon {
+            font-size: 1.5em;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8));
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+
+        .relic-icon.active {
+            color: #32CD32;
+            animation: starTwinkle 1.5s ease-in-out infinite, starSpin 4s linear infinite;
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        @keyframes starSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.05); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.05); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .relic-status {
+            font-size: 0.9em;
+        }
+
+        .relic-status.found {
+            color: #32CD32;
+            font-weight: bold;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #2F1B14, #1a0f0a);
+            border-radius: 15px;
+            border: 3px solid #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .tile {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tile-number {
+            font-size: 8px;
+            margin-bottom: 2px;
+        }
+
+        .tile-icon {
+            font-size: 16px;
+        }
+
+        .tile.normal {
+            background: linear-gradient(135deg, #DEB887, #CD853F);
+            color: #4A4A4A;
+        }
+
+        .tile.coin {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #8B4513;
+            animation: coinShimmer 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes coinShimmer {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+
+        .tile.fire {
+            background: linear-gradient(135deg, #FF4500, #DC143C);
+            color: white;
+            animation: fireFlicker 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fireFlicker {
+            0% { box-shadow: 0 0 15px rgba(255, 69, 0, 0.7); }
+            100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.9); }
+        }
+
+        .tile.prison {
+            background: linear-gradient(135deg, #696969, #2F2F2F);
+            color: #C0C0C0;
+        }
+
+        .tile.secret-forward {
+            background: linear-gradient(135deg, #32CD32, #228B22);
+            color: white;
+            animation: secretGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes secretGlow {
+            0% { box-shadow: 0 0 10px rgba(50, 205, 50, 0.5); }
+            100% { box-shadow: 0 0 18px rgba(50, 205, 50, 0.8); }
+        }
+
+        .tile.secret-backward {
+            background: linear-gradient(135deg, #8B0000, #4B0000);
+            color: white;
+        }
+
+        .tile.player {
+            border: 3px solid #00FF00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+
+        .tile.player {
+            border: 3px solid #00FF00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+            position: relative;
+        }
+
+        .tile.player::after {
+            content: '⚔️';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #00FF00, #32CD32);
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            animation: swordPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes swordPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .tile.elder {
+            border: 3px solid #FF0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .tile.elder::after {
+            content: '🔥';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #FF0000, #FF4500);
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            animation: fireFlame 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes fireFlame {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.15) rotate(2deg); }
+        }
+
+        .dice-section {
+            margin: 30px 0;
+            padding: 30px;
+            background: rgba(26, 26, 46, 0.6);
+            border-radius: 20px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .dice-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            border-radius: 22px;
+            z-index: -1;
+            animation: borderGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        .dice {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(145deg, #fff 0%, #f0f0f0 25%, #e8e8e8 50%, #ddd 75%, #ccc 100%);
+            border: 2px solid #999;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 auto 20px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 0.8),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .dice::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #d4af37);
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dice:hover {
+            transform: scale(1.05) rotateX(5deg) rotateY(5deg);
+            box-shadow: 
+                0 12px 24px rgba(0, 0, 0, 0.3),
+                inset 0 2px 6px rgba(255, 255, 255, 0.9),
+                inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .dice:hover::before {
+            opacity: 1;
+        }
+
+        .dice:active {
+            transform: scale(0.98) rotateX(2deg) rotateY(2deg);
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .dice.rolling {
+            animation: diceRoll3D 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
+
+        @keyframes diceRoll3D {
+            0% { 
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+            25% { 
+                transform: rotateX(180deg) rotateY(90deg) rotateZ(45deg) scale(1.1);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            }
+            50% { 
+                transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg) scale(1.2);
+                box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+            }
+            75% { 
+                transform: rotateX(540deg) rotateY(270deg) rotateZ(135deg) scale(1.1);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            }
+            100% { 
+                transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg) scale(1);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        .dice-face {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 4px;
+            width: 80px;
+            height: 80px;
+            padding: 10px;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f8f8 50%, #eeeeee 100%);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .dice-dot {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 70%, #333 100%);
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.2s ease;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            transform: scale(0);
+        }
+
+        .dice-dot.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .dice-dot:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dice face patterns */
+        .dice-1 .dice-dot:nth-child(5) { opacity: 1; }
+        
+        .dice-2 .dice-dot:nth-child(1),
+        .dice-2 .dice-dot:nth-child(9) { opacity: 1; }
+        
+        .dice-3 .dice-dot:nth-child(1),
+        .dice-3 .dice-dot:nth-child(5),
+        .dice-3 .dice-dot:nth-child(9) { opacity: 1; }
+        
+        .dice-4 .dice-dot:nth-child(1),
+        .dice-4 .dice-dot:nth-child(3),
+        .dice-4 .dice-dot:nth-child(7),
+        .dice-4 .dice-dot:nth-child(9) { opacity: 1; }
+        
+        .dice-5 .dice-dot:nth-child(1),
+        .dice-5 .dice-dot:nth-child(3),
+        .dice-5 .dice-dot:nth-child(5),
+        .dice-5 .dice-dot:nth-child(7),
+        .dice-5 .dice-dot:nth-child(9) { opacity: 1; }
+        
+        .dice-6 .dice-dot:nth-child(1),
+        .dice-6 .dice-dot:nth-child(3),
+        .dice-6 .dice-dot:nth-child(4),
+        .dice-6 .dice-dot:nth-child(6),
+        .dice-6 .dice-dot:nth-child(7),
+        .dice-6 .dice-dot:nth-child(9) { opacity: 1; }
+
+        .dice-label {
+            color: #d4af37;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin-top: 15px;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+        }
+
+        .dice-status {
+            font-size: 0.9em;
+            color: #ffd700;
+            margin-top: 10px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .dice-disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            filter: grayscale(50%);
+        }
+
+        .dice-disabled:hover {
+            transform: none !important;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .turn-indicator {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #d4af37;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffd700;
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+            font-size: 1.2em;
+            font-weight: bold;
+            z-index: 1000;
+            animation: messageAppear 0.5s ease-out;
+        }
+
+        @keyframes messageAppear {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .victory-modal, .defeat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 3px solid #d4af37;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.6);
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #d4af37;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37, #ffd700);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            color: #000;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #666, #888);
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Level 2 Starting Page Styles */
+        .level2-start-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('Trial with elders.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            color: #e8e3d3;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .start-page-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5em;
+            color: #ffd700;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 4px 8px rgba(0, 0, 0, 0.8);
+            margin-bottom: 30px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 4px 8px rgba(0, 0, 0, 0.8); }
+            100% { text-shadow: 0 0 60px rgba(255, 215, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9); }
+        }
+
+        .start-page-story {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            max-width: 700px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .story-text {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #e8e3d3;
+        }
+
+        .story-highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .start-page-stats {
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            border: 2px solid #d4af37;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 600px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .start-game-btn {
+            background: linear-gradient(135deg, #d4af37, #ffd700);
+            border: none;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            color: #000;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: buttonPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes buttonPulse {
+            0% { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+            100% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6); }
+        }
+
+        .start-game-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.8);
+        }
+
+        .game-container {
+            display: none;
+        }
+
+        .game-container.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Level 2 Starting Page -->
+    <div class="level2-start-page" id="level2-start-page">
+        <h1 class="start-page-title">🔥 Trial of the Ember Elder 🔥</h1>
+        
+        <div class="start-page-story">
+            <p class="story-text">
+                Deep within the <span class="story-highlight">Sacred Ember Chambers</span>, the ancient Elder awaits your challenge.
+            </p>
+            <p class="story-text">
+                "<em>Young warrior, you have proven your worth in the mystical forests. Now face me in the
+                <span class="story-highlight">Trial of Flames</span> - a race across 100 sacred tiles where wisdom and courage determine the victor.</em>"
+            </p>
+            <p class="story-text">
+                Navigate treacherous fire traps, collect ancient coins, and use secret passages to reach the <span class="story-highlight">Chamber of Enlightenment</span> before the Elder claims victory.
+            </p>
+        </div>
+
+        <div class="start-page-stats" id="start-page-stats">
+            <div class="stat-item">
+                <div class="stat-label">⚔️ Hero Score</div>
+                <div class="stat-value" id="start-hero-score">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">🏰 Kingdom Glory</div>
+                <div class="stat-value" id="start-kingdom-score">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">❤️ Lives</div>
+                <div class="stat-value" id="start-lives">3</div>
+            </div>
+        </div>
+
+        <button class="start-game-btn" onclick="beginLevel2()">⚔️ Begin the Trial ⚔️</button>
+    </div>
+
+    <div class="game-container" id="game-container">
+        <h1>🔥 Trial of the Ember Elder 🔥</h1>
+        
+        <!-- Game Info HUD -->
+        <div class="game-info">
+            <div class="info-panel">
+                <div class="info-label">⚔️ Hero Score</div>
+                <div class="info-value" id="player-score">0</div>
+            </div>
+            <div class="info-panel">
+                <div class="info-label">🏰 Kingdom Glory</div>
+                <div class="info-value" id="kingdom-score">0</div>
+            </div>
+            <div class="info-panel">
+                <div class="info-label">❤️ Lives</div>
+                <div class="info-value" id="player-lives">3</div>
+            </div>
+            <div class="info-panel forest-relic-panel">
+                <div class="info-label">🌟 Forest Relic</div>
+                <div class="info-value forest-relic-value" id="forest-relic">
+                    <span class="relic-icon">⭐</span>
+                    <span class="relic-status" id="relic-status">Not Found</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Turn Indicator -->
+        <div class="turn-indicator" id="turn-indicator">
+            ⚔️ Your Turn - Roll the Dice of Destiny!
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board" id="game-board">
+            <!-- 100 tiles will be generated here -->
+        </div>
+
+        <!-- Dice Section -->
+        <div class="dice-section">
+            <div class="dice" id="dice" onclick="rollDice()">
+                <div class="dice-face dice-1" id="dice-face">
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                    <div class="dice-dot"></div>
+                </div>
+            </div>
+            <div class="dice-label" id="dice-label">🎲 Click to Roll the Sacred Dice 🎲</div>
+            <div class="dice-status" id="dice-status">Ready to roll!</div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div class="victory-modal hidden" id="victory-modal">
+        <div class="modal-content">
+            <h2 class="modal-title">🔥 The Elder's Sacred Blessing 🔥</h2>
+            <p style="margin: 20px 0; font-style: italic;">
+                "You have proven yourself worthy, brave soul. The flames of wisdom now burn within you."
+            </p>
+            <div class="score-display">
+                <div class="score-item">
+                    <span>⚔️ Hero Score:</span>
+                    <span id="final-hero-score">0</span>
+                </div>
+                <div class="score-item">
+                    <span>🏰 Kingdom Glory:</span>
+                    <span id="final-kingdom-score">0</span>
+                </div>
+                <div class="score-item">
+                    <span>🏆 Victory Bonus:</span>
+                    <span>+2000</span>
+                </div>
+            </div>
+            <button class="btn" onclick="proceedToLevel3()">🚀 Continue to Level 3</button>
+            <button class="btn btn-secondary" onclick="restartLevel()">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <!-- Defeat Modal -->
+    <div class="defeat-modal hidden" id="defeat-modal">
+        <div class="modal-content">
+            <h2 class="modal-title">⚔️ The Elder Prevails ⚔️</h2>
+            <p style="margin: 20px 0;">
+                The ancient wisdom remains guarded, but courage is never lost.
+            </p>
+            <div class="score-display">
+                <div class="score-item">
+                    <span>⚔️ Final Score:</span>
+                    <span id="defeat-score">0</span>
+                </div>
+                <div class="score-item">
+                    <span>❤️ Lives Remaining:</span>
+                    <span id="lives-remaining">0</span>
+                </div>
+            </div>
+            <button class="btn" onclick="restartLevel()">🔄 Try Again</button>
+            <button class="btn btn-secondary" onclick="goBackToLevel1()">← Back to Level 1</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            playerPosition: 0,
+            elderPosition: 0,
+            isPlayerTurn: true,
+            gameActive: true,
+            playerScore: 0,
+            kingdomScore: 0,
+            playerLives: 3,
+            hasForestRelic: false,
+            playerSkipNextTurn: false,
+            elderSkipNextTurn: false
+        };
+
+        // Tile effects
+        const TILE_EFFECTS = {
+            NORMAL: 'normal',
+            COIN: 'coin',
+            FIRE: 'fire',
+            PRISON: 'prison',
+            SECRET_FORWARD: 'secret-forward',
+            SECRET_BACKWARD: 'secret-backward'
+        };
+
+        // Load data from Level 1
+        function loadGameData() {
+            const savedScore = localStorage.getItem('azureon_score') || '0';
+            const savedKingdom = localStorage.getItem('kingdomScore') || '0';
+            const savedLives = localStorage.getItem('azureon_lives') || '3';
+            const forestRelic = localStorage.getItem('azureon_forest_relic') === 'true';
+
+            gameState.playerScore = parseInt(savedScore);
+            gameState.kingdomScore = parseInt(savedKingdom);
+            gameState.playerLives = parseInt(savedLives);
+            gameState.hasForestRelic = forestRelic;
+
+            // Apply forest relic bonus
+            if (gameState.hasForestRelic) {
+                gameState.playerScore += 1000;
+                gameState.kingdomScore += 1000;
+                showMessage('🌟 Forest Relic bonus: +1000 to both scores!');
+            }
+
+            updateDisplay();
+            console.log('🎮 Game data loaded:', gameState);
+        }
+
+        // Generate 100 tiles with medium difficulty
+        function generateTileEffects() {
+            const effects = new Array(100).fill(TILE_EFFECTS.NORMAL);
+            
+            // Medium difficulty - balanced special tiles
+            const specialTiles = [
+                { positions: [8, 15, 24, 32, 41, 53, 62, 71, 84, 93], type: TILE_EFFECTS.COIN }, // 10 coin tiles
+                { positions: [12, 23, 34, 45, 56, 67, 78, 89], type: TILE_EFFECTS.FIRE }, // 8 fire traps  
+                { positions: [18, 37, 58, 76, 91], type: TILE_EFFECTS.PRISON }, // 5 prison tiles
+                { positions: [29, 48, 73], type: TILE_EFFECTS.SECRET_FORWARD }, // 3 shortcuts
+                { positions: [21, 44, 65, 87], type: TILE_EFFECTS.SECRET_BACKWARD } // 4 trap doors
+            ];
+            
+            specialTiles.forEach(({ positions, type }) => {
+                positions.forEach(pos => {
+                    if (pos > 0 && pos < 99) { // Avoid start and end tiles
+                        effects[pos] = type;
+                    }
+                });
+            });
+            
+            return effects;
+        }
+
+        // Create game board
+        function createGameBoard() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            const tileEffects = generateTileEffects();
+            
+            for (let i = 0; i < 100; i++) {
+                const tile = document.createElement('div');
+                tile.className = `tile ${tileEffects[i]}`;
+                tile.id = `tile-${i}`;
+                
+                const tileNumber = document.createElement('div');
+                tileNumber.className = 'tile-number';
+                tileNumber.textContent = i + 1;
+                
+                const tileIcon = document.createElement('div');
+                tileIcon.className = 'tile-icon';
+                
+                // Set icons based on tile type
+                switch (tileEffects[i]) {
+                    case TILE_EFFECTS.COIN:
+                        tileIcon.textContent = '🪙';
+                        break;
+                    case TILE_EFFECTS.FIRE:
+                        tileIcon.textContent = '🔥';
+                        break;
+                    case TILE_EFFECTS.PRISON:
+                        tileIcon.textContent = '⛓️';
+                        break;
+                    case TILE_EFFECTS.SECRET_FORWARD:
+                        tileIcon.textContent = '⬆️';
+                        break;
+                    case TILE_EFFECTS.SECRET_BACKWARD:
+                        tileIcon.textContent = '⬇️';
+                        break;
+                    default:
+                        tileIcon.textContent = '';
+                }
+                
+                tile.appendChild(tileNumber);
+                tile.appendChild(tileIcon);
+                board.appendChild(tile);
+            }
+            
+            updatePlayerPositions();
+        }
+
+        // Show dice face based on roll
+        function showDiceFace(roll) {
+            const diceFace = document.getElementById('dice-face');
+            diceFace.className = `dice-face dice-${roll}`;
+        }
+
+        // Update dice status display
+        function updateDiceStatus(message) {
+            document.getElementById('dice-status').textContent = message;
+        }
+
+        // Roll dice
+        function rollDice() {
+            if (!gameState.gameActive || !gameState.isPlayerTurn) return;
+            
+            const dice = document.getElementById('dice');
+            dice.classList.add('rolling');
+            dice.classList.add('dice-disabled');
+            
+            updateDiceStatus('Rolling the sacred dice...');
+            
+            setTimeout(() => {
+                const roll = Math.floor(Math.random() * 6) + 1;
+                showDiceFace(roll);
+                dice.classList.remove('rolling');
+                
+                updateDiceStatus(`Rolled a ${roll}! Moving warrior...`);
+                
+                // Check if player should skip turn
+                if (gameState.playerSkipNextTurn) {
+                    gameState.playerSkipNextTurn = false;
+                    showMessage('⛓️ You are imprisoned! Skipping your turn...');
+                    updateDiceStatus('Imprisoned - turn skipped!');
+                    setTimeout(() => {
+                        gameState.isPlayerTurn = false;
+                        elderTurn();
+                    }, 1500);
+                    return;
+                }
+                
+                movePlayer(roll);
+            }, 1200);
+        }
+
+        // Move player
+        function movePlayer(steps) {
+            gameState.playerPosition = Math.min(gameState.playerPosition + steps, 99);
+            updatePlayerPositions();
+            
+            showMessage(`⚔️ Warrior moves ${steps} spaces!`);
+            
+            // Check tile effect
+            setTimeout(() => {
+                const tileEffect = document.getElementById(`tile-${gameState.playerPosition}`).classList[1];
+                processTileEffect(tileEffect, 'player');
+                
+                // Check win condition
+                if (gameState.playerPosition >= 99) {
+                    playerWins();
+                    return;
+                }
+                
+                // Switch to elder turn after processing
+                setTimeout(() => {
+                    gameState.isPlayerTurn = false;
+                    const dice = document.getElementById('dice');
+                    dice.classList.add('dice-disabled');
+                    updateDiceStatus('Elder\'s turn - please wait...');
+                    elderTurn();
+                }, 1000);
+            }, 500);
+        }
+
+        // Elder turn
+        function elderTurn() {
+            if (!gameState.gameActive) return;
+            
+            document.getElementById('turn-indicator').textContent = '🔥 Elder is channeling ancient flames...';
+            
+            setTimeout(() => {
+                // Check if elder should skip turn
+                if (gameState.elderSkipNextTurn) {
+                    gameState.elderSkipNextTurn = false;
+                    showMessage('⛓️ Elder is imprisoned! Skipping turn...');
+                    setTimeout(() => {
+                        gameState.isPlayerTurn = true;
+                        document.getElementById('turn-indicator').textContent = '⚔️ Your Turn - Roll the Dice of Destiny!';
+                        const dice = document.getElementById('dice');
+                        dice.classList.remove('dice-disabled');
+                        updateDiceStatus('Ready to roll!');
+                    }, 1500);
+                    return;
+                }
+                
+                const roll = Math.floor(Math.random() * 6) + 1;
+                showMessage(`🔥 Elder rolls ${roll} and advances!`);
+                
+                gameState.elderPosition = Math.min(gameState.elderPosition + roll, 99);
+                updatePlayerPositions();
+                
+                // Check tile effect for elder
+                setTimeout(() => {
+                    const tileEffect = document.getElementById(`tile-${gameState.elderPosition}`).classList[1];
+                    processTileEffect(tileEffect, 'elder');
+                    
+                    // Check elder win condition
+                    if (gameState.elderPosition >= 99) {
+                        elderWins();
+                        return;
+                    }
+                    
+                    // Switch back to player turn
+                    setTimeout(() => {
+                        gameState.isPlayerTurn = true;
+                        document.getElementById('turn-indicator').textContent = '⚔️ Your Turn - Roll the Dice of Destiny!';
+                        const dice = document.getElementById('dice');
+                        dice.classList.remove('dice-disabled');
+                        updateDiceStatus('Ready to roll!');
+                    }, 1000);
+                }, 500);
+            }, 1500);
+        }
+
+        // Process tile effects
+        function processTileEffect(effect, player) {
+            switch (effect) {
+                case TILE_EFFECTS.COIN:
+                    if (player === 'player') {
+                        gameState.playerScore += 300;
+                        gameState.kingdomScore += 300;
+                        showMessage('🪙 Coin collected! +300 points to both scores!');
+                        updateDisplay();
+                    }
+                    break;
+                    
+                case TILE_EFFECTS.FIRE:
+                    if (player === 'player') {
+                        gameState.playerScore = Math.max(0, gameState.playerScore - 150);
+                        showMessage('🔥 Fire trap! -150 Hero points!');
+                        updateDisplay();
+                    }
+                    break;
+                    
+                case TILE_EFFECTS.PRISON:
+                    if (player === 'player') {
+                        gameState.playerSkipNextTurn = true;
+                        showMessage('⛓️ Imprisoned! You will skip your next turn!');
+                    } else {
+                        gameState.elderSkipNextTurn = true;
+                    }
+                    break;
+                    
+                case TILE_EFFECTS.SECRET_FORWARD:
+                    const forwardJump = Math.floor(Math.random() * 8) + 5; // 5-12 spaces forward
+                    if (player === 'player') {
+                        gameState.playerPosition = Math.min(gameState.playerPosition + forwardJump, 99);
+                        showMessage(`⬆️ Secret passage! Jumped forward ${forwardJump} spaces!`);
+                    } else {
+                        gameState.elderPosition = Math.min(gameState.elderPosition + forwardJump, 99);
+                    }
+                    updatePlayerPositions();
+                    break;
+                    
+                case TILE_EFFECTS.SECRET_BACKWARD:
+                    const backwardJump = Math.floor(Math.random() * 6) + 3; // 3-8 spaces backward
+                    if (player === 'player') {
+                        gameState.playerPosition = Math.max(gameState.playerPosition - backwardJump, 0);
+                        showMessage(`⬇️ Trap door! Fell backward ${backwardJump} spaces!`);
+                    } else {
+                        gameState.elderPosition = Math.max(gameState.elderPosition - backwardJump, 0);
+                    }
+                    updatePlayerPositions();
+                    break;
+            }
+        }
+
+        // Update player positions on board
+        function updatePlayerPositions() {
+            // Clear previous positions
+            document.querySelectorAll('.tile').forEach(tile => {
+                tile.classList.remove('player', 'elder');
+            });
+            
+            // Set current positions
+            if (gameState.playerPosition < 100) {
+                document.getElementById(`tile-${gameState.playerPosition}`).classList.add('player');
+            }
+            if (gameState.elderPosition < 100) {
+                document.getElementById(`tile-${gameState.elderPosition}`).classList.add('elder');
+            }
+        }
+
+        // Update display
+        function updateDisplay() {
+            document.getElementById('player-score').textContent = gameState.playerScore.toLocaleString();
+            document.getElementById('kingdom-score').textContent = gameState.kingdomScore.toLocaleString();
+            document.getElementById('player-lives').textContent = gameState.playerLives;
+            
+            // Enhanced Forest Relic display
+            const relicPanel = document.querySelector('.forest-relic-panel');
+            const relicIcon = document.querySelector('.relic-icon');
+            const relicStatus = document.getElementById('relic-status');
+            
+            if (gameState.hasForestRelic) {
+                relicPanel.classList.add('has-relic');
+                relicIcon.classList.add('active');
+                relicStatus.textContent = 'Obtained';
+                relicStatus.classList.add('found');
+            } else {
+                relicPanel.classList.remove('has-relic');
+                relicIcon.classList.remove('active');
+                relicStatus.textContent = 'Not Found';
+                relicStatus.classList.remove('found');
+            }
+        }
+
+        // Show message
+        function showMessage(text) {
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.textContent = text;
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 2500);
+        }
+
+        // Player wins
+        function playerWins() {
+            gameState.gameActive = false;
+            
+            // Victory bonus
+            gameState.playerScore += 2000;
+            gameState.kingdomScore += 2000;
+            
+            // Save scores
+            localStorage.setItem('azureon_score', gameState.playerScore.toString());
+            localStorage.setItem('kingdomScore', gameState.kingdomScore.toString());
+            localStorage.setItem('azureon_lives', gameState.playerLives.toString());
+            
+            // Show victory modal
+            document.getElementById('final-hero-score').textContent = gameState.playerScore.toLocaleString();
+            document.getElementById('final-kingdom-score').textContent = gameState.kingdomScore.toLocaleString();
+            document.getElementById('victory-modal').classList.remove('hidden');
+        }
+
+        // Elder wins
+        function elderWins() {
+            gameState.gameActive = false;
+            gameState.playerLives--;
+            
+            // Save remaining lives
+            localStorage.setItem('azureon_lives', gameState.playerLives.toString());
+            
+            // Show defeat modal
+            document.getElementById('defeat-score').textContent = gameState.playerScore.toLocaleString();
+            document.getElementById('lives-remaining').textContent = gameState.playerLives;
+            document.getElementById('defeat-modal').classList.remove('hidden');
+        }
+
+        // Navigation functions
+        function proceedToLevel3() {
+            window.location.href = 'level3_game.html?from=level2';
+        }
+
+        function restartLevel() {
+            location.reload();
+        }
+
+        function goBackToLevel1() {
+            window.location.href = 'index.html';
+        }
+
+        // Begin Level 2 - Hide start page and show game
+        function beginLevel2() {
+            document.getElementById('level2-start-page').style.display = 'none';
+            document.getElementById('game-container').classList.add('active');
+            initGame();
+        }
+
+        // Initialize starting page
+        function initStartPage() {
+            const savedScore = localStorage.getItem('azureon_score') || '0';
+            const savedKingdom = localStorage.getItem('kingdomScore') || '0';
+            const savedLives = localStorage.getItem('azureon_lives') || '3';
+            
+            document.getElementById('start-hero-score').textContent = parseInt(savedScore).toLocaleString();
+            document.getElementById('start-kingdom-score').textContent = parseInt(savedKingdom).toLocaleString();
+            document.getElementById('start-lives').textContent = savedLives;
+            
+            console.log('🎮 Level 2 starting page initialized!');
+        }
+
+        // Initialize game
+        function initGame() {
+            loadGameData();
+            createGameBoard();
+            console.log('🎮 Level 2: Trial of the Ember Elder game started!');
+        }
+
+        // Start with the starting page when page loads
+        window.addEventListener('load', initStartPage);
+    </script>
+</body>
+</html>
